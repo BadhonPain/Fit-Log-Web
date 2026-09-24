@@ -1,11 +1,4 @@
 # 💪Fit Log
-
---- 
-
-## 📅 Deadline For 60 marks: 26 September | ⏱️11:59PM
-## 📅 Deadline For 50 marks: 27 September | ⏱️11:59PM
-## 📅 Deadline for 30 marks: Any time after 27 September 2026
-
 --- 
 # API's 
 
