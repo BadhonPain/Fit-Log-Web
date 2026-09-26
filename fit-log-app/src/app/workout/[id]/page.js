@@ -5,6 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { usePlan } from "../../context/PlanContext";
+import RestTimer from "../../components/RestTimer";
 
 export default function WorkoutDetailPage() {
   const params = useParams();
@@ -172,7 +173,7 @@ export default function WorkoutDetailPage() {
         {/* Two-Column Layout */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-14 items-start">
           {/* Left Column — Visual / Media */}
-          <div className="lg:col-span-6">
+          <div className="lg:col-span-6 space-y-6">
             <div className="relative w-full aspect-square sm:aspect-[4/5] bg-dark-card border border-dark-border rounded-3xl overflow-hidden shadow-2xl">
               <Image
                 src={imgSrc || "/banner.png"}
@@ -187,6 +188,9 @@ export default function WorkoutDetailPage() {
               />
               <div className="absolute inset-0 bg-gradient-to-t from-dark-bg/60 via-transparent to-transparent pointer-events-none"></div>
             </div>
+
+            {/* Feature 2: Interactive Gym Rest Timer & Set Logger */}
+            <RestTimer initialSets={sets} workoutName={name} />
           </div>
 
           {/* Right Column — Details & Action Buttons */}
