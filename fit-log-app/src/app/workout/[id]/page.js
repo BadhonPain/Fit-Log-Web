@@ -24,7 +24,20 @@ export default function WorkoutDetailPage() {
     async function fetchDetail() {
       if (!id) return;
       try {
-        const res = await fetch(`https://api.abcz.workers.dev/api/fitlog/${id}`);
+        let res;
+
+        // 1. Primary: Call official single workout API
+        try {
+          res = await fetch(`https://api.abcz.workers.dev/api/fitlog/${id}`);
+        } catch {
+          // Cross-origin / network error
+        }
+
+        // 2. Resilient API fallback if the worker is rate limited
+        if (!res || !res.ok) {
+          res = await fetch(`/api/fitlog/${id}`);
+        }
+
         if (!res.ok) {
           throw new Error(
             res.status === 404
@@ -32,6 +45,7 @@ export default function WorkoutDetailPage() {
               : `Failed to load workout (${res.status})`
           );
         }
+
         const data = await res.json();
         if (!ignore) {
           setWorkout(data);
@@ -99,13 +113,15 @@ export default function WorkoutDetailPage() {
             />
           </svg>
         </div>
-        <h2 className="text-2xl font-bold text-white mb-2">Workout Not Found</h2>
-        <p className="text-zinc-400 text-sm mb-6">
+        <h2 className="text-2xl font-bold text-white mb-2 font-[family-name:var(--font-oswald)] uppercase">
+          Workout Not Found
+        </h2>
+        <p className="text-zinc-400 text-sm mb-6 max-w-md mx-auto leading-relaxed">
           {error || "The workout lift you requested could not be located."}
         </p>
         <Link
           href="/"
-          className="inline-flex items-center gap-2 px-6 py-2.5 rounded-full bg-accent text-black font-semibold text-sm hover:opacity-90 transition-opacity"
+          className="inline-flex items-center gap-2 px-6 py-2.5 rounded-full bg-accent text-black font-semibold text-sm hover:opacity-90 transition-opacity cursor-pointer"
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"

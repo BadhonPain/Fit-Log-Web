@@ -27,10 +27,24 @@ const LibrarySection = () => {
 
     async function loadWorkouts() {
       try {
-        const res = await fetch("https://api.abcz.workers.dev/api/fitlog");
+        let res;
+
+        // 1. Primary: Call the official FitLog API
+        try {
+          res = await fetch("https://api.abcz.workers.dev/api/fitlog");
+        } catch {
+          // Cross-origin or network error from Cloudflare rate limiting
+        }
+
+        // 2. Resilient API fallback if the third-party Cloudflare worker hits rate limits
+        if (!res || !res.ok) {
+          res = await fetch("/api/fitlog");
+        }
+
         if (!res.ok) {
           throw new Error(`Failed to fetch workouts (${res.status})`);
         }
+
         const data = await res.json();
         if (!ignore) {
           setWorkouts(data);
@@ -58,10 +72,22 @@ const LibrarySection = () => {
     try {
       setLoading(true);
       setError(null);
-      const res = await fetch("https://api.abcz.workers.dev/api/fitlog");
+
+      let res;
+      try {
+        res = await fetch("https://api.abcz.workers.dev/api/fitlog");
+      } catch {
+        // Fallback
+      }
+
+      if (!res || !res.ok) {
+        res = await fetch("/api/fitlog");
+      }
+
       if (!res.ok) {
         throw new Error(`Failed to fetch workouts (${res.status})`);
       }
+
       const data = await res.json();
       setWorkouts(data);
     } catch (err) {
@@ -191,7 +217,7 @@ const LibrarySection = () => {
             {searchQuery && (
               <button
                 onClick={() => setSearchQuery("")}
-                className="absolute inset-y-0 right-0 pr-3 flex items-center text-zinc-400 hover:text-white"
+                className="absolute inset-y-0 right-0 pr-3 flex items-center text-zinc-400 hover:text-white cursor-pointer"
                 title="Clear search"
               >
                 <svg
@@ -298,7 +324,7 @@ const LibrarySection = () => {
 
         {/* Error State */}
         {!loading && error && (
-          <div className="py-20 text-center">
+          <div className="py-20 text-center max-w-md mx-auto">
             <div className="inline-flex p-4 rounded-full bg-red-500/10 text-red-400 mb-4 border border-red-500/20">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -315,15 +341,15 @@ const LibrarySection = () => {
                 />
               </svg>
             </div>
-            <h3 className="text-xl font-bold text-white mb-2">
+            <h3 className="text-xl font-bold text-white mb-2 font-[family-name:var(--font-oswald)] uppercase">
               Failed to load workouts
             </h3>
-            <p className="text-zinc-400 text-sm max-w-md mx-auto mb-6">
+            <p className="text-zinc-400 text-sm mb-6 leading-relaxed">
               {error}
             </p>
             <button
               onClick={handleRetry}
-              className="px-6 py-2.5 rounded-full bg-accent text-black font-semibold text-sm hover:opacity-90 transition-opacity cursor-pointer"
+              className="px-6 py-2.5 rounded-full bg-accent text-black font-bold text-xs uppercase tracking-wider hover:bg-[#b8e600] active:scale-95 transition-all cursor-pointer shadow-lg shadow-accent/20"
             >
               Try Again
             </button>
