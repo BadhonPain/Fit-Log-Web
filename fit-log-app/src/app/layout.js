@@ -23,6 +23,12 @@ const oswald = Oswald({
 export const metadata = {
   title: "FitLog — Train With Intent. Log Every Set.",
   description: "FitLog is a dark, no-nonsense gym companion: pick a lift, lock it into today's plan, and watch the week's work add up.",
+  metadataBase: new URL(
+    process.env.NEXT_SERVER_BASE_URL || "http://localhost:3000"
+  ),
+  openGraph: {
+    images: ["/banner.png"],
+  },
 };
 
 export default function RootLayout({ children }) {
