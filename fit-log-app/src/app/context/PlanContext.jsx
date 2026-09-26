@@ -162,7 +162,7 @@ export const PlanProvider = ({ children }) => {
       localStorage.setItem(STORAGE_KEY_SAVED, JSON.stringify(updated));
       notifyChange();
     } catch (e) {
-      console.error("Failed to update saved workouts", e);
+      console.error("Failed to update saved workouts..", e);
     }
     toast.info(`Removed "${item?.name || "workout"}" from saved`);
   };
@@ -190,6 +190,7 @@ export const PlanProvider = ({ children }) => {
 export const usePlan = () => {
   const context = useContext(PlanContext);
   if (!context) {
+
     throw new Error("usePlan must be used within a PlanProvider");
   }
   return context;
