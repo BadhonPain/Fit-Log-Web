@@ -4,9 +4,21 @@ import React from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
+import { usePlan } from "../context/PlanContext";
 
-const NavBar = ({ planCount = 0, savedCount = 0 }) => {
+const NavBar = ({ planCount: propPlanCount, savedCount: propSavedCount }) => {
   const pathname = usePathname();
+  let planCount = propPlanCount;
+  let savedCount = propSavedCount;
+
+  try {
+    const planContext = usePlan();
+    if (planCount === undefined) planCount = planContext.planCount;
+    if (savedCount === undefined) savedCount = planContext.savedCount;
+  } catch {
+    if (planCount === undefined) planCount = 0;
+    if (savedCount === undefined) savedCount = 0;
+  }
 
   const isActive = (path) => {
     if (path === "/") return pathname === "/";
@@ -24,7 +36,6 @@ const NavBar = ({ planCount = 0, savedCount = 0 }) => {
             </span>
           </Link>
 
-          
           <div className="hidden sm:flex items-center gap-1">
             <Link
               href="/"
@@ -52,13 +63,13 @@ const NavBar = ({ planCount = 0, savedCount = 0 }) => {
           <div className="flex items-center gap-3">
             <Link
               href="/my-plan"
-              className="bg-accent text-black text-xs font-bold px-3 py-1 rounded-full"
+              className="bg-accent text-black text-xs font-bold px-3 py-1 rounded-full hover:opacity-90 transition-opacity"
             >
               Plan {planCount}
             </Link>
             <Link
               href="/my-plan"
-              className="border border-accent text-accent text-xs font-bold px-3 py-1 rounded-full"
+              className="border border-accent text-accent text-xs font-bold px-3 py-1 rounded-full hover:bg-accent/10 transition-colors"
             >
               Saved {savedCount}
             </Link>
